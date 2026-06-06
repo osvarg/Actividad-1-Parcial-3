@@ -1,0 +1,1 @@
+{   "project_name": "conversor_divisas",   "version": "1.0.0",   "dependencies": {     "currency_rates": "static_matrix",     "test_framework": "pytest_simulated"   } }
