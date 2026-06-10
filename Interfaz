@@ -1,0 +1,94 @@
+# interfaz.py
+# Desarrollador de Interfaz (Dev 2)
+# Menú de consola e interacciones con el usuario
+
+from conversor import convertir, obtener_monedas_disponibles
+
+
+def mostrar_menu():
+    """Muestra el menú principal al usuario."""
+    monedas = obtener_monedas_disponibles()
+    print("\n╔══════════════════════════════════════╗")
+    print("║     CONVERSOR DE DIVISAS v1.0.0      ║")
+    print("╠══════════════════════════════════════╣")
+    print("║  Monedas disponibles:                ║")
+    for i, moneda in enumerate(monedas, start=1):
+        print(f"║    {i}. {moneda:<33}║")
+    print("╠══════════════════════════════════════╣")
+    print("║  Opciones:                           ║")
+    print("║    C. Convertir divisas              ║")
+    print("║    S. Salir                          ║")
+    print("╚══════════════════════════════════════╝")
+
+
+def ejecutar_conversion():
+    """Flujo de conversión interactivo."""
+    monedas = obtener_monedas_disponibles()
+    print(f"\nMonedas disponibles: {', '.join(monedas)}")
+
+    moneda_origen = input("Ingresa la moneda de origen (ej. MXN): ").strip().upper()
+    moneda_destino = input("Ingresa la moneda de destino (ej. USD): ").strip().upper()
+
+    try:
+        monto = float(input(f"Ingresa el monto en {moneda_origen}: ").strip())
+    except ValueError:
+        print("Error: el monto debe ser un número.")
+        return
+
+    resultado = convertir(monto, moneda_origen, moneda_destino)
+
+    if resultado == 0 and monto != 0:
+        print("Error: moneda no reconocida o monto inválido.")
+    else:
+        print(f"\n {monto} {moneda_origen} = {resultado} {moneda_destino}")
+
+
+def iniciar_menu(input_simulado=None):
+    """
+    Inicia el menú principal.
+    Acepta input_simulado (lista) para pruebas automatizadas tipo Selenium.
+    """
+    _input_iter = iter(input_simulado) if input_simulado else None
+
+    def leer_input(prompt=""):
+        if _input_iter:
+            valor = next(_input_iter, "S")
+            print(f"{prompt}{valor}")  # Simula escritura del usuario
+            return valor
+        return input(prompt)
+
+    print("\nSistema iniciado. Bienvenido al Conversor de Divisas.\n")
+
+    while True:
+        mostrar_menu()
+        opcion = leer_input("Selecciona una opción: ").strip().upper()
+
+        if opcion == "C":
+            # En modo simulado pasamos el control; en real usamos input
+            if _input_iter:
+                monedas = obtener_monedas_disponibles()
+                print(f"\nMonedas disponibles: {', '.join(monedas)}")
+                moneda_origen = leer_input("Ingresa la moneda de origen (ej. MXN): ").upper()
+                moneda_destino = leer_input("Ingresa la moneda de destino (ej. USD): ").upper()
+                try:
+                    monto = float(leer_input(f"Ingresa el monto en {moneda_origen}: "))
+                except ValueError:
+                    print("Error: el monto debe ser un número.")
+                    continue
+                resultado = convertir(monto, moneda_origen, moneda_destino)
+                if resultado == 0 and monto != 0:
+                    print("Error: moneda no reconocida o monto inválido.")
+                else:
+                    print(f"\n{monto} {moneda_origen} = {resultado} {moneda_destino}")
+            else:
+                ejecutar_conversion()
+
+        elif opcion == "S":
+            print("\nHasta luego. Sistema cerrado.\n")
+            break
+        else:
+            print("Opción inválida, intente de nuevo")
+
+
+if __name__ == "__main__":
+    iniciar_menu()
